@@ -8,6 +8,8 @@ import Rest.restRequest.UserBasicInfoBodyRestRequest;
 import Rest.restRequest.UserMitAdresseBodyRestRequest;
 import Rest.restResponse.BasicBodyRestResponse;
 import Rest.restResponse.UserBodyRestResponse;
+import Service.Email.EmailSenderService;
+import Service.LoginUtils;
 import Service.UserService;
 import entity.Adresse;
 import entity.User;
@@ -34,6 +36,9 @@ public class TestController {
 
     @Autowired
     private AdresseRepository adresseRepository;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @GetMapping(path = "/user/{name}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<User> getUserName(@PathVariable(value = "name") String nom) {
@@ -68,9 +73,29 @@ public class TestController {
     public BasicBodyRestResponse saveUser(@RequestBody UserBasicInfoBodyRestRequest user) {
         BasicBodyRestResponse response = new BasicBodyRestResponse();
         try {
-            userRepository.save(new User(user.getName(), user.getVorname(), user.getAge(), user.getEmail(), user.getPassword()));
-            log.info(user.toString()+" was save successfully");
+            if (LoginUtils.testName(user.getName()) && LoginUtils.testName(user.getVorname())) {
+                if (LoginUtils.testEmail(user.getEmail())) {
+                    if (LoginUtils.testPasword(user.getPassword())) {
+                        userRepository.save(new User(user.getName(), user.getVorname(), user.getAge(), user.getEmail(), user.getPassword()));
+                        log.info(user.toString()+" was save successfully");
+                        emailSenderService.sendEmail(user.getEmail(),"Confirmation","User was save");
+                        return response;
+                    } else {
+                        log.info("Password is weak");
+                        response.addErrorMessage(ErrorMessage.password_weak);
+                    }
+                } else {
+                    log.info("Email is invalid");
+                    response.addErrorMessage(ErrorMessage.email_invalid);
+                }
+
+            } else {
+                log.info("FirstName or lastName is too small");
+                response.addErrorMessage(ErrorMessage.name_small);
+            }
+
             return response;
+
         } catch (Exception e) {
             log.error(user.toString()+" was save unsuccessfully");
             response.addErrorMessage(ErrorMessage.technical_error);
