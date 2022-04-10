@@ -2,14 +2,13 @@ package controller;
 
 import Dao.AdresseRepository;
 import Dao.UserRepository;
-import Rest.Error.ErrorMessage;
+import Error.ErrorMessage;
 import Rest.restRequest.AdresseBasicInfoBodyRestRequest;
 import Rest.restRequest.UserBasicInfoBodyRestRequest;
 import Rest.restRequest.UserMitAdresseBodyRestRequest;
 import Rest.restResponse.BasicBodyRestResponse;
 import Rest.restResponse.UserBodyRestResponse;
 import Service.UserService;
-import com.example.api_test_nellynd.ApiTestNellyNdApplication;
 import entity.Adresse;
 import entity.User;
 import org.slf4j.Logger;
@@ -18,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

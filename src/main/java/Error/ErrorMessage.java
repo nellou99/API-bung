@@ -1,4 +1,4 @@
-package Rest.Error;
+package Error;
 
 public class ErrorMessage {
     public static final String technical_error = "There was a Technical Error" ;
